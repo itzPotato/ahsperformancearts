@@ -11,11 +11,11 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
   useEffect(() => {
     const openTimer = setTimeout(() => {
       setIsOpen(true);
-    }, 800);
+    }, 1000);
     
     const fadeTimer = setTimeout(() => {
       setFadeOut(true);
-    }, 2000);
+    }, 3500);
     
     return () => {
       clearTimeout(openTimer);
@@ -27,9 +27,9 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
     <div className="relative">
       {/* Left Curtain */}
       <div
-        className={`fixed inset-y-0 left-0 w-1/2 z-50 transition-all duration-[2000ms] ease-curtain ${
-          isOpen ? "-translate-x-full" : "translate-x-0"
-        } ${fadeOut ? "opacity-0" : "opacity-100"}`}
+        className={`fixed inset-y-0 left-0 w-1/2 z-50 transition-all ease-curtain ${
+          isOpen ? "-translate-x-full duration-[2500ms]" : "translate-x-0 duration-500"
+        } ${fadeOut ? "opacity-0 duration-[1500ms]" : "opacity-100"}`}
         style={{
           background: 'linear-gradient(90deg, #8B0000 0%, #B22222 20%, #8B0000 40%, #B22222 60%, #8B0000 80%, #B22222 100%)',
           boxShadow: 'inset -20px 0 40px rgba(0,0,0,0.5), inset 20px 0 40px rgba(0,0,0,0.3)',
@@ -54,9 +54,9 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
 
       {/* Right Curtain */}
       <div
-        className={`fixed inset-y-0 right-0 w-1/2 z-50 transition-all duration-[2000ms] ease-curtain ${
-          isOpen ? "translate-x-full" : "translate-x-0"
-        } ${fadeOut ? "opacity-0" : "opacity-100"}`}
+        className={`fixed inset-y-0 right-0 w-1/2 z-50 transition-all ease-curtain ${
+          isOpen ? "translate-x-full duration-[2500ms]" : "translate-x-0 duration-500"
+        } ${fadeOut ? "opacity-0 duration-[1500ms]" : "opacity-100"}`}
         style={{
           background: 'linear-gradient(90deg, #B22222 0%, #8B0000 20%, #B22222 40%, #8B0000 60%, #B22222 80%, #8B0000 100%)',
           boxShadow: 'inset 20px 0 40px rgba(0,0,0,0.5), inset -20px 0 40px rgba(0,0,0,0.3)',
