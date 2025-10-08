@@ -10,7 +10,7 @@ const Footer = () => {
             <div className="flex items-center gap-2 mb-4">
               <Theater className="w-6 h-6 text-accent" />
               <span className="font-playfair text-2xl font-bold text-foreground">
-                AHS Drama
+                AHS Performing Arts
               </span>
             </div>
             <p className="text-muted-foreground">
@@ -31,7 +31,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="w-4 h-4 text-accent" />
-                <span>American High School Theater</span>
+                <span>Theater 70, American High School</span>
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} American High School Drama Department. 
+            © {new Date().getFullYear()} American High School Performing Arts. 
             All performances protected by copyright.
           </p>
         </div>

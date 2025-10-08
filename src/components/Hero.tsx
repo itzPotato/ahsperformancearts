@@ -24,10 +24,10 @@ const Hero = () => {
         
         <h1 className="font-playfair text-6xl md:text-8xl font-black mb-6 tracking-tight">
           <span className="block text-foreground drop-shadow-dramatic">
-            AHS Drama
+            AHS Performing
           </span>
           <span className="block text-accent drop-shadow-spotlight">
-            Department
+            Arts
           </span>
         </h1>
         
