@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import CurrentWork from "@/components/CurrentWork";
 import ProductionGallery from "@/components/ProductionGallery";
 import MembersSection from "@/components/MembersSection";
 import Footer from "@/components/Footer";
@@ -9,6 +10,7 @@ const Index = () => {
     <CurtainAnimation>
       <div className="min-h-screen bg-background">
         <Hero />
+        <CurrentWork />
         <ProductionGallery />
         <MembersSection />
         <Footer />
