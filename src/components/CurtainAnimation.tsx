@@ -12,7 +12,7 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
 
   useEffect(() => {
     let accumulatedScroll = 0;
-    const maxScroll = 300; // Total scroll amount needed to complete animation
+    const maxScroll = 400; // Total scroll amount needed to complete animation
 
     const handleWheel = (e: WheelEvent) => {
       if (!animationComplete) {
@@ -65,69 +65,118 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
     };
   }, [animationComplete]);
 
-  const curtainTransform = scrollProgress * 100;
-  const curtainOpacity = scrollProgress >= 0.7 ? 1 - ((scrollProgress - 0.7) / 0.3) : 1;
+  // Multi-stage animation: fast open (0-0.35) -> pause (0.35-0.45) -> slow back (0.45-0.6) -> final open (0.6-1)
+  const getCurtainTransform = (progress: number) => {
+    if (progress < 0.35) {
+      // Fast opening - accelerated
+      return (progress / 0.35) * 40; // Move to 40%
+    } else if (progress < 0.45) {
+      // Pause - hold position
+      return 40;
+    } else if (progress < 0.6) {
+      // Slow backward - curtains move back a bit
+      const backProgress = (progress - 0.45) / 0.15;
+      return 40 - (backProgress * 8); // Move back 8% slowly
+    } else {
+      // Final opening - smooth and complete
+      const finalProgress = (progress - 0.6) / 0.4;
+      return 32 + (finalProgress * 68); // From 32% to 100%
+    }
+  };
+
+  const curtainTransform = getCurtainTransform(scrollProgress);
+  const curtainOpacity = scrollProgress >= 0.85 ? 1 - ((scrollProgress - 0.85) / 0.15) : 1;
 
   return (
     <div ref={containerRef} className="relative">
       {/* Left Curtain */}
       <div
-        className={`fixed inset-y-0 left-0 w-1/2 z-50 transition-opacity duration-500 ${
+        className={`fixed inset-y-0 left-0 w-1/2 z-50 ${
           animationComplete ? 'pointer-events-none' : ''
         }`}
         style={{
-          transform: `translateX(-${curtainTransform}%)`,
+          transform: `translateX(-${curtainTransform}%) perspective(1000px) rotateY(${curtainTransform * 0.15}deg)`,
           opacity: curtainOpacity,
-          transition: 'transform 0.1s ease-out, opacity 0.5s ease-out',
-          background: 'linear-gradient(90deg, #8B0000 0%, #B22222 20%, #8B0000 40%, #B22222 60%, #8B0000 80%, #B22222 100%)',
-          boxShadow: 'inset -20px 0 40px rgba(0,0,0,0.5), inset 20px 0 40px rgba(0,0,0,0.3)',
+          transition: scrollProgress < 0.35 ? 'transform 0.05s cubic-bezier(0.4, 0, 0.2, 1)' :
+                     scrollProgress < 0.45 ? 'none' :
+                     scrollProgress < 0.6 ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.4, 1)' :
+                     'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+          transformOrigin: 'right center',
+          background: 'linear-gradient(90deg, #6B0000 0%, #8B0000 10%, #A52A2A 25%, #8B0000 40%, #6B0000 55%, #8B0000 70%, #A52A2A 85%, #8B0000 100%)',
+          boxShadow: `inset -30px 0 60px rgba(0,0,0,0.7), 
+                      inset 15px 0 30px rgba(139,0,0,0.4),
+                      20px 0 80px rgba(0,0,0,0.6),
+                      5px 0 20px rgba(139,0,0,0.3)`,
         }}
       >
-        {/* Curtain folds */}
-        <div className="absolute inset-0 opacity-40"
+        {/* Deep folds with 3D effect */}
+        <div className="absolute inset-0 opacity-60"
           style={{
-            background: 'repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.2) 40px, rgba(0,0,0,0.2) 80px)',
+            background: `repeating-linear-gradient(90deg, 
+              rgba(0,0,0,0.4) 0px, 
+              rgba(0,0,0,0.1) 20px,
+              rgba(255,255,255,0.05) 30px,
+              rgba(0,0,0,0.2) 40px,
+              rgba(0,0,0,0.5) 60px)`,
           }}
         />
-        {/* Velvet texture */}
-        <div className="absolute inset-0 opacity-20"
+        {/* Rich velvet texture */}
+        <div className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-            backgroundSize: '60px 60px',
+            backgroundImage: `radial-gradient(circle at 25% 30%, rgba(255,255,255,0.15) 0%, transparent 40%),
+                             radial-gradient(circle at 15% 70%, rgba(255,255,255,0.1) 0%, transparent 35%)`,
+            backgroundSize: '80px 80px, 60px 60px',
           }}
         />
-        {/* Edge highlight */}
-        <div className="absolute inset-y-0 right-0 w-2 bg-gradient-to-r from-transparent via-accent/30 to-accent/50" />
+        {/* Center fold highlight */}
+        <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-r from-transparent via-white/20 to-white/40" />
+        {/* Edge shadows */}
+        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/60 via-black/20 to-transparent" />
       </div>
 
       {/* Right Curtain */}
       <div
-        className={`fixed inset-y-0 right-0 w-1/2 z-50 transition-opacity duration-500 ${
+        className={`fixed inset-y-0 right-0 w-1/2 z-50 ${
           animationComplete ? 'pointer-events-none' : ''
         }`}
         style={{
-          transform: `translateX(${curtainTransform}%)`,
+          transform: `translateX(${curtainTransform}%) perspective(1000px) rotateY(-${curtainTransform * 0.15}deg)`,
           opacity: curtainOpacity,
-          transition: 'transform 0.1s ease-out, opacity 0.5s ease-out',
-          background: 'linear-gradient(90deg, #B22222 0%, #8B0000 20%, #B22222 40%, #8B0000 60%, #B22222 80%, #8B0000 100%)',
-          boxShadow: 'inset 20px 0 40px rgba(0,0,0,0.5), inset -20px 0 40px rgba(0,0,0,0.3)',
+          transition: scrollProgress < 0.35 ? 'transform 0.05s cubic-bezier(0.4, 0, 0.2, 1)' :
+                     scrollProgress < 0.45 ? 'none' :
+                     scrollProgress < 0.6 ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.4, 1)' :
+                     'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+          transformOrigin: 'left center',
+          background: 'linear-gradient(90deg, #8B0000 0%, #A52A2A 15%, #8B0000 30%, #6B0000 45%, #8B0000 60%, #A52A2A 75%, #8B0000 90%, #6B0000 100%)',
+          boxShadow: `inset 30px 0 60px rgba(0,0,0,0.7), 
+                      inset -15px 0 30px rgba(139,0,0,0.4),
+                      -20px 0 80px rgba(0,0,0,0.6),
+                      -5px 0 20px rgba(139,0,0,0.3)`,
         }}
       >
-        {/* Curtain folds */}
-        <div className="absolute inset-0 opacity-40"
+        {/* Deep folds with 3D effect */}
+        <div className="absolute inset-0 opacity-60"
           style={{
-            background: 'repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.2) 40px, rgba(0,0,0,0.2) 80px)',
+            background: `repeating-linear-gradient(90deg, 
+              rgba(0,0,0,0.5) 0px,
+              rgba(0,0,0,0.2) 20px,
+              rgba(255,255,255,0.05) 30px, 
+              rgba(0,0,0,0.1) 40px,
+              rgba(0,0,0,0.4) 60px)`,
           }}
         />
-        {/* Velvet texture */}
-        <div className="absolute inset-0 opacity-20"
+        {/* Rich velvet texture */}
+        <div className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: 'radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-            backgroundSize: '60px 60px',
+            backgroundImage: `radial-gradient(circle at 75% 30%, rgba(255,255,255,0.15) 0%, transparent 40%),
+                             radial-gradient(circle at 85% 70%, rgba(255,255,255,0.1) 0%, transparent 35%)`,
+            backgroundSize: '80px 80px, 60px 60px',
           }}
         />
-        {/* Edge highlight */}
-        <div className="absolute inset-y-0 left-0 w-2 bg-gradient-to-l from-transparent via-accent/30 to-accent/50" />
+        {/* Center fold highlight */}
+        <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-l from-transparent via-white/20 to-white/40" />
+        {/* Edge shadows */}
+        <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
       </div>
 
       {/* Content */}
