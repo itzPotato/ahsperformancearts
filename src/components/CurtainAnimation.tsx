@@ -12,7 +12,9 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
 
   useEffect(() => {
     let accumulatedScroll = 0;
-    const maxScroll = 400; // Total scroll amount needed to complete animation
+    const maxScroll = 600; // Total scroll amount needed to complete animation (slower)
+    let scrollDelayTimeout: NodeJS.Timeout | null = null;
+    let allowScroll = false;
 
     const handleWheel = (e: WheelEvent) => {
       if (!animationComplete) {
@@ -23,7 +25,13 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
         
         if (progress >= 1) {
           setAnimationComplete(true);
+          // Add 1 second delay before allowing normal scrolling
+          scrollDelayTimeout = setTimeout(() => {
+            allowScroll = true;
+          }, 1000);
         }
+      } else if (!allowScroll) {
+        e.preventDefault();
       }
     };
 
@@ -48,9 +56,15 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
           
           if (progress >= 1) {
             setAnimationComplete(true);
+            // Add 1 second delay before allowing normal scrolling
+            scrollDelayTimeout = setTimeout(() => {
+              allowScroll = true;
+            }, 1000);
           }
         }
         containerRef.current?.setAttribute('data-touch-start', touch.clientY.toString());
+      } else if (!allowScroll) {
+        e.preventDefault();
       }
     };
 
@@ -62,6 +76,9 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
+      if (scrollDelayTimeout) {
+        clearTimeout(scrollDelayTimeout);
+      }
     };
   }, [animationComplete]);
 
@@ -102,36 +119,48 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
                      scrollProgress < 0.6 ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.4, 1)' :
                      'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
           transformOrigin: 'right center',
-          background: 'linear-gradient(90deg, #6B0000 0%, #8B0000 10%, #A52A2A 25%, #8B0000 40%, #6B0000 55%, #8B0000 70%, #A52A2A 85%, #8B0000 100%)',
-          boxShadow: `inset -30px 0 60px rgba(0,0,0,0.7), 
-                      inset 15px 0 30px rgba(139,0,0,0.4),
-                      20px 0 80px rgba(0,0,0,0.6),
-                      5px 0 20px rgba(139,0,0,0.3)`,
+          background: 'linear-gradient(90deg, #4A0000 0%, #8B0000 15%, #B22222 30%, #8B0000 45%, #4A0000 60%, #8B0000 75%, #B22222 90%, #6B0000 100%)',
+          boxShadow: `inset -40px 0 80px rgba(0,0,0,0.8), 
+                      inset 20px 0 40px rgba(139,0,0,0.5),
+                      30px 0 100px rgba(0,0,0,0.7),
+                      10px 0 30px rgba(139,0,0,0.4)`,
         }}
       >
-        {/* Deep folds with 3D effect */}
-        <div className="absolute inset-0 opacity-60"
+        {/* Vertical pleated folds - theater curtain style */}
+        <div className="absolute inset-0 opacity-70"
           style={{
             background: `repeating-linear-gradient(90deg, 
-              rgba(0,0,0,0.4) 0px, 
-              rgba(0,0,0,0.1) 20px,
-              rgba(255,255,255,0.05) 30px,
-              rgba(0,0,0,0.2) 40px,
-              rgba(0,0,0,0.5) 60px)`,
+              rgba(0,0,0,0.6) 0px, 
+              rgba(0,0,0,0.3) 8px,
+              rgba(255,255,255,0.1) 12px,
+              rgba(0,0,0,0.2) 16px,
+              rgba(0,0,0,0.5) 20px,
+              rgba(0,0,0,0.7) 28px,
+              rgba(255,255,255,0.08) 32px,
+              rgba(0,0,0,0.4) 36px,
+              rgba(0,0,0,0.6) 40px)`,
           }}
         />
-        {/* Rich velvet texture */}
-        <div className="absolute inset-0 opacity-30"
+        {/* Rich velvet texture with vertical highlights */}
+        <div className="absolute inset-0 opacity-40"
           style={{
-            backgroundImage: `radial-gradient(circle at 25% 30%, rgba(255,255,255,0.15) 0%, transparent 40%),
-                             radial-gradient(circle at 15% 70%, rgba(255,255,255,0.1) 0%, transparent 35%)`,
-            backgroundSize: '80px 80px, 60px 60px',
+            backgroundImage: `
+              repeating-linear-gradient(90deg, 
+                transparent 0px,
+                rgba(255,255,255,0.12) 10px,
+                transparent 12px,
+                transparent 20px),
+              repeating-linear-gradient(90deg, 
+                transparent 0px,
+                rgba(0,0,0,0.3) 20px,
+                transparent 22px,
+                transparent 40px)`,
           }}
         />
         {/* Center fold highlight */}
-        <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-r from-transparent via-white/20 to-white/40" />
+        <div className="absolute inset-y-0 right-0 w-2 bg-gradient-to-r from-transparent via-white/30 to-white/50 shadow-lg" />
         {/* Edge shadows */}
-        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-black/70 via-black/30 to-transparent" />
       </div>
 
       {/* Right Curtain */}
@@ -147,36 +176,48 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
                      scrollProgress < 0.6 ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.4, 1)' :
                      'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
           transformOrigin: 'left center',
-          background: 'linear-gradient(90deg, #8B0000 0%, #A52A2A 15%, #8B0000 30%, #6B0000 45%, #8B0000 60%, #A52A2A 75%, #8B0000 90%, #6B0000 100%)',
-          boxShadow: `inset 30px 0 60px rgba(0,0,0,0.7), 
-                      inset -15px 0 30px rgba(139,0,0,0.4),
-                      -20px 0 80px rgba(0,0,0,0.6),
-                      -5px 0 20px rgba(139,0,0,0.3)`,
+          background: 'linear-gradient(90deg, #6B0000 0%, #B22222 10%, #8B0000 25%, #4A0000 40%, #8B0000 55%, #B22222 70%, #8B0000 85%, #4A0000 100%)',
+          boxShadow: `inset 40px 0 80px rgba(0,0,0,0.8), 
+                      inset -20px 0 40px rgba(139,0,0,0.5),
+                      -30px 0 100px rgba(0,0,0,0.7),
+                      -10px 0 30px rgba(139,0,0,0.4)`,
         }}
       >
-        {/* Deep folds with 3D effect */}
-        <div className="absolute inset-0 opacity-60"
+        {/* Vertical pleated folds - theater curtain style */}
+        <div className="absolute inset-0 opacity-70"
           style={{
             background: `repeating-linear-gradient(90deg, 
-              rgba(0,0,0,0.5) 0px,
-              rgba(0,0,0,0.2) 20px,
-              rgba(255,255,255,0.05) 30px, 
-              rgba(0,0,0,0.1) 40px,
-              rgba(0,0,0,0.4) 60px)`,
+              rgba(0,0,0,0.6) 0px,
+              rgba(0,0,0,0.4) 8px,
+              rgba(255,255,255,0.08) 12px, 
+              rgba(0,0,0,0.2) 16px,
+              rgba(0,0,0,0.5) 20px,
+              rgba(0,0,0,0.7) 28px,
+              rgba(255,255,255,0.1) 32px,
+              rgba(0,0,0,0.3) 36px,
+              rgba(0,0,0,0.6) 40px)`,
           }}
         />
-        {/* Rich velvet texture */}
-        <div className="absolute inset-0 opacity-30"
+        {/* Rich velvet texture with vertical highlights */}
+        <div className="absolute inset-0 opacity-40"
           style={{
-            backgroundImage: `radial-gradient(circle at 75% 30%, rgba(255,255,255,0.15) 0%, transparent 40%),
-                             radial-gradient(circle at 85% 70%, rgba(255,255,255,0.1) 0%, transparent 35%)`,
-            backgroundSize: '80px 80px, 60px 60px',
+            backgroundImage: `
+              repeating-linear-gradient(90deg, 
+                transparent 0px,
+                rgba(255,255,255,0.12) 10px,
+                transparent 12px,
+                transparent 20px),
+              repeating-linear-gradient(90deg, 
+                transparent 0px,
+                rgba(0,0,0,0.3) 20px,
+                transparent 22px,
+                transparent 40px)`,
           }}
         />
         {/* Center fold highlight */}
-        <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-l from-transparent via-white/20 to-white/40" />
+        <div className="absolute inset-y-0 left-0 w-2 bg-gradient-to-l from-transparent via-white/30 to-white/50 shadow-lg" />
         {/* Edge shadows */}
-        <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
       </div>
 
       {/* Content */}
