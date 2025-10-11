@@ -9,28 +9,25 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
   const [animationComplete, setAnimationComplete] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const allowScrollRef = useRef(false);
+  const delayTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     let accumulatedScroll = 0;
-    const maxScroll = 600; // Total scroll amount needed to complete animation (slower)
-    let scrollDelayTimeout: NodeJS.Timeout | null = null;
-    let allowScroll = false;
+    const maxScroll = 800; // Total scroll amount needed to complete animation (slower)
 
     const handleWheel = (e: WheelEvent) => {
       if (!animationComplete) {
         e.preventDefault();
-        accumulatedScroll = Math.min(maxScroll, accumulatedScroll + Math.abs(e.deltaY));
-        const progress = accumulatedScroll / maxScroll;
-        setScrollProgress(progress);
-        
-        if (progress >= 1) {
-          setAnimationComplete(true);
-          // Add 1 second delay before allowing normal scrolling
-          scrollDelayTimeout = setTimeout(() => {
-            allowScroll = true;
-          }, 1000);
+        if (e.deltaY > 0) {
+          accumulatedScroll = Math.min(maxScroll, accumulatedScroll + e.deltaY);
+          const progress = accumulatedScroll / maxScroll;
+          setScrollProgress(progress);
+          if (progress >= 1) {
+            setAnimationComplete(true);
+          }
         }
-      } else if (!allowScroll) {
+      } else if (!allowScrollRef.current) {
         e.preventDefault();
       }
     };
@@ -56,18 +53,16 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
           
           if (progress >= 1) {
             setAnimationComplete(true);
-            // Add 1 second delay before allowing normal scrolling
-            scrollDelayTimeout = setTimeout(() => {
-              allowScroll = true;
-            }, 1000);
           }
         }
         containerRef.current?.setAttribute('data-touch-start', touch.clientY.toString());
-      } else if (!allowScroll) {
+      } else if (!allowScrollRef.current) {
         e.preventDefault();
       }
     };
 
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -76,8 +71,20 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
-      if (scrollDelayTimeout) {
-        clearTimeout(scrollDelayTimeout);
+      document.body.style.overflow = '';
+    };
+  }, [animationComplete]);
+
+  useEffect(() => {
+    if (animationComplete) {
+      delayTimeoutRef.current = window.setTimeout(() => {
+        allowScrollRef.current = true;
+      }, 1000);
+    }
+    return () => {
+      if (delayTimeoutRef.current) {
+        clearTimeout(delayTimeoutRef.current);
+        delayTimeoutRef.current = null;
       }
     };
   }, [animationComplete]);
