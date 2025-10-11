@@ -79,6 +79,8 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
     if (animationComplete) {
       delayTimeoutRef.current = window.setTimeout(() => {
         allowScrollRef.current = true;
+        // Re-enable native page scrolling after delay
+        document.body.style.overflow = '';
       }, 1000);
     }
     return () => {
