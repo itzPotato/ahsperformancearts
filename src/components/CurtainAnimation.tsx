@@ -10,20 +10,24 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const allowScrollRef = useRef(false);
+  const animationCompleteRef = useRef(false);
   const delayTimeoutRef = useRef<number | null>(null);
+  const accumulatedScrollRef = useRef(0);
+  const originalBodyOverflowRef = useRef<string>("");
+  const originalHtmlOverflowRef = useRef<string>("");
 
   useEffect(() => {
-    let accumulatedScroll = 0;
     const maxScroll = 800; // Total scroll amount needed to complete animation (slower)
 
     const handleWheel = (e: WheelEvent) => {
-      if (!animationComplete) {
+      if (!animationCompleteRef.current) {
         e.preventDefault();
         if (e.deltaY > 0) {
-          accumulatedScroll = Math.min(maxScroll, accumulatedScroll + e.deltaY);
-          const progress = accumulatedScroll / maxScroll;
+          accumulatedScrollRef.current = Math.min(maxScroll, accumulatedScrollRef.current + e.deltaY);
+          const progress = accumulatedScrollRef.current / maxScroll;
           setScrollProgress(progress);
           if (progress >= 1) {
+            animationCompleteRef.current = true;
             setAnimationComplete(true);
           }
         }
@@ -33,25 +37,26 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
     };
 
     const handleTouchStart = (e: TouchEvent) => {
-      if (!animationComplete) {
+      if (!animationCompleteRef.current) {
         const touch = e.touches[0];
         containerRef.current?.setAttribute('data-touch-start', touch.clientY.toString());
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!animationComplete) {
+      if (!animationCompleteRef.current) {
         e.preventDefault();
         const touchStart = parseFloat(containerRef.current?.getAttribute('data-touch-start') || '0');
         const touch = e.touches[0];
         const delta = touchStart - touch.clientY;
         
         if (delta > 0) {
-          accumulatedScroll = Math.min(maxScroll, accumulatedScroll + Math.abs(delta) * 0.5);
-          const progress = accumulatedScroll / maxScroll;
+          accumulatedScrollRef.current = Math.min(maxScroll, accumulatedScrollRef.current + Math.abs(delta) * 0.5);
+          const progress = accumulatedScrollRef.current / maxScroll;
           setScrollProgress(progress);
           
           if (progress >= 1) {
+            animationCompleteRef.current = true;
             setAnimationComplete(true);
           }
         }
@@ -61,8 +66,11 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
       }
     };
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // Lock scroll during the intro animation.
+    originalBodyOverflowRef.current = document.body.style.overflow;
+    originalHtmlOverflowRef.current = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -71,16 +79,18 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
-      document.body.style.overflow = '';
+      document.body.style.overflow = originalBodyOverflowRef.current;
+      document.documentElement.style.overflow = originalHtmlOverflowRef.current;
     };
-  }, [animationComplete]);
+  }, []);
 
   useEffect(() => {
     if (animationComplete) {
       delayTimeoutRef.current = window.setTimeout(() => {
         allowScrollRef.current = true;
         // Re-enable native page scrolling after delay
-        document.body.style.overflow = '';
+        document.body.style.overflow = originalBodyOverflowRef.current;
+        document.documentElement.style.overflow = originalHtmlOverflowRef.current;
       }, 1000);
     }
     return () => {
