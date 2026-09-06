@@ -1,4 +1,5 @@
 import { Calendar, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ProductionCardProps {
   title: string;
@@ -7,12 +8,16 @@ interface ProductionCardProps {
   image: string;
   cast: number;
   delay?: string;
+  playId?: string;
 }
 
-const ProductionCard = ({ title, year, description, image, cast, delay = "0s" }: ProductionCardProps) => {
+const ProductionCard = ({ title, year, description, image, cast, delay = "0s", playId }: ProductionCardProps) => {
+  const playSlug = playId || title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  
   return (
-    <div 
-      className="group relative overflow-hidden rounded-xl bg-card border border-border shadow-dramatic hover:shadow-spotlight transition-all duration-500 hover:scale-[1.02] animate-fade-in"
+    <Link 
+      to={`/play/${playSlug}`}
+      className="group relative overflow-hidden rounded-xl bg-card border border-border shadow-dramatic hover:shadow-spotlight transition-all duration-500 hover:scale-[1.02] animate-fade-in block"
       style={{ animationDelay: delay }}
     >
       {/* Image Container */}
@@ -57,7 +62,7 @@ const ProductionCard = ({ title, year, description, image, cast, delay = "0s" }:
 
       {/* Bottom Accent Line */}
       <div className="h-1 bg-gradient-curtain transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-    </div>
+    </Link>
   );
 };
 

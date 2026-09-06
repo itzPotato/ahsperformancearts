@@ -1,6 +1,26 @@
 import { Theater, Mail, MapPin } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+  
+  const handleHashLink = (hash: string) => {
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const element = document.querySelector(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <footer className="bg-card border-t border-border py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -43,29 +63,43 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a href="#productions" className="text-muted-foreground hover:text-accent transition-colors duration-300">
+                <button 
+                  onClick={() => handleHashLink('#productions')}
+                  className="text-muted-foreground hover:text-accent transition-colors duration-300 text-left"
+                >
                   Productions
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#about" className="text-muted-foreground hover:text-accent transition-colors duration-300">
+                <Link to="/about" className="text-muted-foreground hover:text-accent transition-colors duration-300">
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#auditions" className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                  Auditions
-                </a>
+                <button 
+                  onClick={() => handleHashLink('#current-work')}
+                  className="text-muted-foreground hover:text-accent transition-colors duration-300 text-left"
+                >
+                  Season Update
+                </button>
+              </li>
+              <li>
+                <Link to="/contact" className="text-muted-foreground hover:text-accent transition-colors duration-300">
+                  Contact
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-border text-center">
+        <div className="pt-8 border-t border-border text-center space-y-2">
           <p className="text-muted-foreground text-sm">
             © {new Date().getFullYear()} American High School Performing Arts. 
             All performances protected by copyright.
+          </p>
+          <p className="text-muted-foreground text-xs">
+            Website created by Rohan Sashank Babbellapati
           </p>
         </div>
       </div>

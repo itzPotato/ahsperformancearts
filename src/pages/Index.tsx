@@ -1,7 +1,6 @@
 import Hero from "@/components/Hero";
 import CurrentWork from "@/components/CurrentWork";
 import ProductionGallery from "@/components/ProductionGallery";
-import MembersSection from "@/components/MembersSection";
 import Footer from "@/components/Footer";
 import CurtainAnimation from "@/components/CurtainAnimation";
 
@@ -12,7 +11,6 @@ const Index = () => {
         <Hero />
         <CurrentWork />
         <ProductionGallery />
-        <MembersSection />
         <Footer />
       </div>
     </CurtainAnimation>

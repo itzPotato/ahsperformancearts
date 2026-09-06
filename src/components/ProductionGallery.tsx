@@ -5,9 +5,17 @@ import hamiltonImg from "@/assets/hamilton-style.jpg";
 import midsummerImg from "@/assets/midsummer.jpg";
 import greaseImg from "@/assets/grease.jpg";
 import lesMisImg from "@/assets/les-mis.jpg";
-import { Sparkles } from "lucide-react";
+import meanGirlsImg from "@/assets/theater-hero.jpg";
 
 const productions = [
+  {
+    title: "Mean Girls (High School Version)",
+    year: "2026",
+    description: "AHS Performing Arts brought the hit musical to Theater 70 with sharp humor, bold characters, and a cast full of student talent.",
+    image: meanGirlsImg,
+    cast: 26,
+    playId: "mean-girls"
+  },
   {
     title: "Romeo & Juliet",
     year: "2024",
@@ -61,13 +69,6 @@ const ProductionGallery = () => {
       <div className="max-w-7xl mx-auto relative">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/30 backdrop-blur-sm border border-accent/30 mb-6">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-accent font-medium text-sm tracking-wider uppercase">
-              Our Productions
-            </span>
-          </div>
-          
           <h2 className="font-playfair text-5xl md:text-6xl font-bold mb-6 text-foreground">
             Past <span className="text-accent">Performances</span>
           </h2>
@@ -85,6 +86,7 @@ const ProductionGallery = () => {
               key={production.title}
               {...production}
               delay={`${index * 0.1}s`}
+              playId={production.playId || production.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}
             />
           ))}
         </div>

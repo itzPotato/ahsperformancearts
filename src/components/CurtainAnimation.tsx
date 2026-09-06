@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 interface CurtainAnimationProps {
   children: React.ReactNode;
 }
 
 const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
+  const location = useLocation();
+  const [shouldShowAnimation, setShouldShowAnimation] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [animationComplete, setAnimationComplete] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,7 +19,24 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
   const originalBodyOverflowRef = useRef<string>("");
   const originalHtmlOverflowRef = useRef<string>("");
 
+  // Check if animation should be shown (only on home page, first time)
   useEffect(() => {
+    const hasSeenAnimation = localStorage.getItem('ahs-curtain-animation-seen');
+    const isHomePage = location.pathname === '/';
+    
+    if (isHomePage && !hasSeenAnimation) {
+      setShouldShowAnimation(true);
+      localStorage.setItem('ahs-curtain-animation-seen', 'true');
+    } else {
+      setShouldShowAnimation(false);
+      setAnimationComplete(true);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!shouldShowAnimation) {
+      return;
+    }
     const maxScroll = 800; // Total scroll amount needed to complete animation (slower)
 
     const handleWheel = (e: WheelEvent) => {
@@ -82,7 +102,7 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
       document.body.style.overflow = originalBodyOverflowRef.current;
       document.documentElement.style.overflow = originalHtmlOverflowRef.current;
     };
-  }, []);
+  }, [shouldShowAnimation]);
 
   useEffect(() => {
     if (animationComplete) {
@@ -122,6 +142,11 @@ const CurtainAnimation = ({ children }: CurtainAnimationProps) => {
 
   const curtainTransform = getCurtainTransform(scrollProgress);
   const curtainOpacity = scrollProgress >= 0.85 ? 1 - ((scrollProgress - 0.85) / 0.15) : 1;
+
+  // If animation shouldn't show, just render children
+  if (!shouldShowAnimation) {
+    return <>{children}</>;
+  }
 
   return (
     <div ref={containerRef} className="relative">

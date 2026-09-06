@@ -1,34 +1,24 @@
-import { Calendar, Users, MapPin } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CurrentWork = () => {
   const currentProduction = {
-    title: "Spring Musical 2025",
-    description: "Our cast and crew are hard at work bringing this spectacular production to life. Join us for an unforgettable theatrical experience featuring talented student performers, stunning choreography, and breathtaking musical numbers.",
-    rehearsalStart: "January 2025",
-    showDates: "March 14-16, 2025",
+    title: "2025-26 Season Wrap-Up",
+    description: "Thank you to everyone who supported AHS Performing Arts throughout the 2025-26 academic year. Mean Girls (High School Version) has finished its run, and ticket sales for the production are now closed.",
+    showDates: "Mean Girls performed April 2, 3, 4 and April 9, 10, 11, 2026",
+    nextUpdate: "Information about the next production will be announced when available.",
     location: "Theater 70, American High School",
-    castSize: "35+ students",
-    status: "In Rehearsal"
   };
 
   return (
     <section id="current-work" className="py-20 px-4 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 backdrop-blur-sm border border-accent/30 mb-4">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
-            </span>
-            <span className="text-accent font-medium text-sm tracking-wider uppercase">
-              {currentProduction.status}
-            </span>
-          </div>
           <h2 className="font-playfair text-5xl md:text-6xl font-bold text-foreground mb-4">
-            Current Work
+            Season Update
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Experience the magic as it unfolds
+            Celebrating a finished year of performances
           </p>
         </div>
 
@@ -46,9 +36,16 @@ const CurrentWork = () => {
               <div className="flex items-start gap-4 p-4 bg-background/50 rounded-lg border border-accent/10">
                 <Calendar className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="font-semibold text-foreground mb-1">Performance Dates</h4>
+                  <h4 className="font-semibold text-foreground mb-1">Completed Production</h4>
                   <p className="text-muted-foreground">{currentProduction.showDates}</p>
-                  <p className="text-sm text-muted-foreground/70 mt-1">Rehearsing since {currentProduction.rehearsalStart}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 bg-background/50 rounded-lg border border-accent/10">
+                <Calendar className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-semibold text-foreground mb-1">What's Next</h4>
+                  <p className="text-muted-foreground">{currentProduction.nextUpdate}</p>
                 </div>
               </div>
 
@@ -59,28 +56,20 @@ const CurrentWork = () => {
                   <p className="text-muted-foreground">{currentProduction.location}</p>
                 </div>
               </div>
-
-              <div className="flex items-start gap-4 p-4 bg-background/50 rounded-lg border border-accent/10 md:col-span-2">
-                <Users className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-semibold text-foreground mb-1">Cast & Crew</h4>
-                  <p className="text-muted-foreground">{currentProduction.castSize} talented students collaborating to create theatrical excellence</p>
-                </div>
-              </div>
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
-              <a 
-                href="#auditions" 
+              <Link 
+                to="/play/mean-girls" 
                 className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold shadow-dramatic hover:shadow-spotlight transition-all duration-300 hover:scale-105 text-center"
               >
-                Audition Information
-              </a>
+                View Mean Girls Archive
+              </Link>
               <a 
-                href="#members" 
+                href="#productions" 
                 className="px-8 py-4 bg-card/50 backdrop-blur-sm text-foreground rounded-lg font-semibold border border-accent/30 hover:bg-card/70 transition-all duration-300 text-center"
               >
-                Meet the Cast
+                View Past Productions
               </a>
             </div>
           </div>

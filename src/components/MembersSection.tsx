@@ -2,10 +2,19 @@ import MemberCard from "./MemberCard";
 import { Users } from "lucide-react";
 
 const MembersSection = () => {
-  const faculty = [
-    { name: "Ms. Sarah Martinez", role: "Drama Director", department: "Faculty Advisor" },
-    { name: "Mr. David Chen", role: "Technical Director", department: "Faculty Advisor" },
-    { name: "Mrs. Jennifer Williams", role: "Choreographer", department: "Faculty Advisor" },
+  const coreCrew = [
+    { 
+      name: "Ms. Benedetti", 
+      role: "Drama Director", 
+      department: "Faculty Advisor",
+      bio: "Ms. Benedetti brings years of theatrical expertise and passion for student development to the AHS Performing Arts program. She has directed numerous award-winning productions and is dedicated to nurturing the next generation of performers."
+    },
+    { 
+      name: "Mr. Wong", 
+      role: "Technical Director", 
+      department: "Faculty Advisor",
+      bio: "Mr. Wong oversees all technical aspects of our productions, from lighting and sound design to set construction. His technical expertise ensures every performance runs smoothly and looks spectacular."
+    },
   ];
 
   const leadActors = [
@@ -60,52 +69,41 @@ const MembersSection = () => {
           </p>
         </div>
 
-        {/* Faculty */}
+        {/* Core Crew & Faculty */}
         <div className="mb-12">
           <h3 className="font-playfair text-3xl font-bold text-foreground mb-6 text-center">
-            Faculty Advisors
+            Core Crew & Faculty
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {faculty.map((member, index) => (
-              <MemberCard key={index} {...member} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {coreCrew.map((member, index) => (
+              <div key={index} className="bg-card border border-border rounded-lg p-6 hover:shadow-spotlight transition-all duration-300">
+                <div className="flex flex-col items-center text-center mb-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-stage flex items-center justify-center mb-4">
+                    <Users className="w-8 h-8 text-accent" />
+                  </div>
+                  <h3 className="font-playfair text-xl font-bold text-foreground mb-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-accent text-sm font-medium mb-1">
+                    {member.role}
+                  </p>
+                  <p className="text-muted-foreground text-xs mb-4">
+                    {member.department}
+                  </p>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed text-center">
+                  {member.bio}
+                </p>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Lead Actors */}
-        <div className="mb-12">
-          <h3 className="font-playfair text-3xl font-bold text-foreground mb-6 text-center">
-            Lead Actors
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {leadActors.map((member, index) => (
-              <MemberCard key={index} {...member} />
-            ))}
-          </div>
-        </div>
-
-        {/* Supporting Cast */}
-        <div className="mb-12">
-          <h3 className="font-playfair text-3xl font-bold text-foreground mb-6 text-center">
-            Supporting Cast
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {supportingActors.map((member, index) => (
-              <MemberCard key={index} {...member} />
-            ))}
-          </div>
-        </div>
-
-        {/* Technical Crew */}
-        <div>
-          <h3 className="font-playfair text-3xl font-bold text-foreground mb-6 text-center">
-            Technical & Production Crew
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {crew.map((member, index) => (
-              <MemberCard key={index} {...member} />
-            ))}
-          </div>
+        {/* Note about cast list */}
+        <div className="mb-12 text-center">
+          <p className="text-muted-foreground">
+            Full cast lists are available on individual production pages. <a href="#productions" className="text-accent hover:underline">View our productions</a> to see cast information for each show.
+          </p>
         </div>
       </div>
     </section>
